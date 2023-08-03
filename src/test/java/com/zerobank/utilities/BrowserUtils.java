@@ -1,4 +1,4 @@
-package com.kraftech.utilities;
+package com.zerobank.utilities;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 public class BrowserUtils {
+
     /*
      * takes screenshot
      * @param name
@@ -185,7 +186,7 @@ public class BrowserUtils {
      */
     public static void verifyElementDisplayed(By by) {
         try {
-            Assert.assertTrue("Element not visible: " + by, Driver.get().findElement(by).isDisplayed());
+            Assert.assertTrue(Driver.get().findElement(by).isDisplayed());
         } catch (NoSuchElementException e) {
             e.printStackTrace();
             Assert.fail("Element not found: " + by);
@@ -201,7 +202,7 @@ public class BrowserUtils {
      */
     public static void verifyElementNotDisplayed(By by) {
         try {
-            Assert.assertFalse("Element should not be visible: " + by, Driver.get().findElement(by).isDisplayed());
+            Assert.assertFalse(Driver.get().findElement(by).isDisplayed());
         } catch (NoSuchElementException e) {
             e.printStackTrace();
 
@@ -217,7 +218,7 @@ public class BrowserUtils {
      */
     public static void verifyElementDisplayed(WebElement element) {
         try {
-            Assert.assertTrue("Element not visible: " + element, element.isDisplayed());
+            Assert.assertTrue(element.isDisplayed());
         } catch (NoSuchElementException e) {
             e.printStackTrace();
             Assert.fail("Element not found: " + element);
@@ -263,6 +264,7 @@ public class BrowserUtils {
      * @param element
      */
     public static void clickWithJS(WebElement element) {
+        waitForClickablility(element,7);
         ((JavascriptExecutor) Driver.get()).executeScript("arguments[0].scrollIntoView(true);", element);
         ((JavascriptExecutor) Driver.get()).executeScript("arguments[0].click();", element);
     }
@@ -403,6 +405,50 @@ public class BrowserUtils {
         new WebDriverWait(Driver.get(), time).until(ExpectedConditions.presenceOfElementLocated(by));
         //WebDriverWait wait = new WebDriverWait(Driver.get(), Duration.ofSeconds(20));
         //wait.until(ExpectedConditions.presenceOfElementLocated(by));
+    }
+
+    public static void handleToStaleElementAndClick(WebElement element){
+        WebDriverWait wait = new WebDriverWait(Driver.get(),7);
+        if(!wait.until(ExpectedConditions.stalenessOf(element))){
+            element.click();
+        }else{
+            wait.until(ExpectedConditions.refreshed(ExpectedConditions.stalenessOf(element)));
+            element.click();
+        }
+    }
+
+    public static void handleToStaleElementAndClick(WebElement element,By by){
+        try {
+            element.click();
+        }catch (StaleElementReferenceException staleElementReferenceException){
+            staleElementReferenceException.printStackTrace();
+            WebElement element1 = Driver.get().findElement(by);
+            element1.click();
+        }catch (WebDriverException webDriverException){
+            webDriverException.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @param e
+     * @param txt
+     */
+    public static void sendKeys(WebElement e, String txt) {
+        try {
+            e.sendKeys(txt);
+        } catch (NoSuchElementException | StaleElementReferenceException error) {
+            error.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @param element
+     * @return the text of WebElement as String
+     */
+    public static String getText(WebElement element) {
+        return element.getText();
     }
 
 }

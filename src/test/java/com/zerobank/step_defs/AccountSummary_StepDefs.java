@@ -4,7 +4,8 @@ import com.zerobank.pages.AccountSummaryPage;
 import com.zerobank.pages.LoginPage;
 import com.zerobank.pages.OnlineBankingPage;
 import com.zerobank.utilities.Driver;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.junit.Assert;
 
 import java.util.List;
